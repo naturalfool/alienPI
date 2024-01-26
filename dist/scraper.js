@@ -7,10 +7,16 @@ exports.scrapelien = void 0;
 const puppeteer_1 = __importDefault(require("puppeteer"));
 async function scrapelien() {
     function formatRow(headers, row) {
+        if (!row) {
+            console.log('also something');
+            throw 'no row';
+        }
         const columns = row.split("\n");
+        console.log(columns, 'columns');
         const formattedRow = {};
         columns.forEach((column, index) => {
-            formattedRow.headers[index] = column[index];
+            console.log(column[index], 'individual column');
+            formattedRow.headers[index] = column;
         });
         return formattedRow;
     }
@@ -25,10 +31,12 @@ async function scrapelien() {
     }, selector);
     await browser.close();
     const unformattedHeaders = data.shift();
-    const formattedHeaders = unformattedHeaders
-        ? unformattedHeaders.match(/[A-Z][a-z]+/g)
-        : null;
-    console.log(`🥫🥫🕳️🪵 scraper.ts line 25 >>>>> formattedHeaders >>>>> `, formattedHeaders);
-    return [{}];
+    // console.log(data[0], 'data')
+    if (!unformattedHeaders) {
+        throw 'no headers';
+    }
+    const formattedHeaders = unformattedHeaders.match(/[A-Z][a-z]+/g);
+    console.log(formatRow(formattedHeaders, data[0]), 'thing to be returned');
+    return [];
 }
 exports.scrapelien = scrapelien;
