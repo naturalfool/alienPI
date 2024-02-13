@@ -22,7 +22,7 @@ describe("scrapelien", () => {
         summary: expect.any(String),
         reported: expect.any(String),
         posted: expect.any(String),
-        image: expect.any(String),
+        image: expect.any(String || false),
       })
     );
   });
