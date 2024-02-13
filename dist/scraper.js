@@ -16,8 +16,9 @@ async function scrapelien() {
         return [url, ...cells];
     }));
     const records = data.map((row) => {
+        const link = row[0];
         return {
-            link: row[0],
+            link,
             occurred: row[2],
             city: row[3],
             state: row[4],
@@ -26,11 +27,31 @@ async function scrapelien() {
             summary: row[7],
             reported: row[8],
             posted: row[9],
-            image: row[10] === ("" || "N") ? false : "this will be where the image url goes honey",
+            image: row[10] === ("" || "N") ? [] : itsGivingImage(link),
         };
     });
     await browser.close();
-    console.log(`🥫🥫🕳️🪵 scraper.ts line 40 >>>>> records >>>>> `, records);
+    console.log(records[0].link, 'link of first sighting');
     return records;
 }
 exports.scrapelien = scrapelien;
+async function itsGivingImage(url) {
+    const browser = await puppeteer_1.default.launch();
+    const page = await browser.newPage();
+    await page.goto(url);
+    console.log(url, 'URL');
+    const givenImages = await page.evaluate(async () => {
+        try {
+            const images = Array.from(document.querySelectorAll('img')).map((image) => image.getAttribute('src'));
+            return images;
+        }
+        catch (error) {
+            throw error;
+        }
+    });
+    await browser.close();
+    return givenImages.slice(1);
+}
+itsGivingImage('https://nuforc.org/sighting/?id=180317').then((result) => {
+    console.log(result);
+});

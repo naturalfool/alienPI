@@ -10,7 +10,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "puppeteer": "^21.9.0"
+    "puppeteer": "^21.11.0"
   },
   "devDependencies": {
     "@types/jest": "^29.5.11",
