@@ -1,4 +1,4 @@
-import puppeteer from "puppeteer";
+import puppeteer, { Browser } from "puppeteer";
 
 export async function scrapelien() {
   const browser = await puppeteer.launch();
@@ -19,49 +19,43 @@ export async function scrapelien() {
     })
   );
 
-  const records = data.map((row) => {
-    const link = row[0]
-    return {
-      link,
-      occurred: row[2],
-      city: row[3],
-      state: row[4],
-      country: row[5],
-      shape: row[6],
-      summary: row[7],
-      reported: row[8],
-      posted: row[9],
-      image: row[10] === ("" || "N") ? [] : itsGivingImage(link),
-    };
-  });
+  const records = await Promise.all(
+    data.map(async (row) => {
+      const link = row[0];
+      return {
+        link,
+        occurred: row[2],
+        city: row[3],
+        state: row[4],
+        country: row[5],
+        shape: row[6],
+        summary: row[7],
+        reported: row[8],
+        posted: row[9],
+        image:
+          row[10] === ("" || "N") ? [] : await itsGivingImage(link, browser),
+      };
+    })
+  );
 
   await browser.close();
-
-  console.log(records[0].link, 'link of first sighting');
 
   return records;
 }
 
-async function itsGivingImage(url: string) {
-  const browser = await puppeteer.launch();
+async function itsGivingImage(url: string, browser: Browser) {
   const page = await browser.newPage();
   await page.goto(url);
-console.log(url, 'URL')
-  const givenImages =  await page.evaluate(async () => {
-     try { const images = Array.from(
-document.querySelectorAll('img')
-     ).map((image) => image.getAttribute('src'))
+  const givenImages = await page.evaluate(async () => {
+    try {
+      const images = Array.from(document.querySelectorAll("img")).map((image) =>
+        image.getAttribute("src")
+      );
 
-    return images
+      return images;
+    } catch (error) {
+      throw error;
     }
-    catch (error) {throw error}
-  })
-
-  
-  await browser.close();
-  return givenImages.slice(1)
+  });
+  return givenImages.slice(1);
 }
-
-itsGivingImage('https://nuforc.org/sighting/?id=180317').then((result) => {
-  console.log(result)
-})

@@ -4,14 +4,14 @@ describe("scrapelien", () => {
   test("should return something", async () => {
     const res = await scrapelien();
     expect(res).not.toBe(undefined);
-  });
+  }, 10000000);
   test("should return an array", async () => {
     const res = await scrapelien();
     expect(Array.isArray(res)).toBe(true);
-  });
+  }, 10000000);
   test("all objects in the array should contain the correct keys", async () => {
     const res = await scrapelien();
-    res.forEach((sighting) =>
+    res.forEach((sighting: any) =>
       expect(sighting).toMatchObject({
         link: expect.any(String),
         occurred: expect.any(String),
@@ -25,5 +25,5 @@ describe("scrapelien", () => {
         image: expect.any(Array),
       })
     );
-  });
+  }, 10000000);
 });
