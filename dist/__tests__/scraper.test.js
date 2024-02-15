@@ -5,11 +5,11 @@ describe("scrapelien", () => {
     test("should return something", async () => {
         const res = await (0, scraper_1.scrapelien)();
         expect(res).not.toBe(undefined);
-    });
+    }, 10000000);
     test("should return an array", async () => {
         const res = await (0, scraper_1.scrapelien)();
         expect(Array.isArray(res)).toBe(true);
-    });
+    }, 10000000);
     test("all objects in the array should contain the correct keys", async () => {
         const res = await (0, scraper_1.scrapelien)();
         res.forEach((sighting) => expect(sighting).toMatchObject({
@@ -24,5 +24,5 @@ describe("scrapelien", () => {
             posted: expect.any(String),
             image: expect.any(Array),
         }));
-    });
+    }, 10000000);
 });

@@ -15,7 +15,7 @@ async function scrapelien() {
         const url = await row.$$eval("td a", (links) => links[0].href);
         return [url, ...cells];
     }));
-    const records = data.map((row) => {
+    const records = await Promise.all(data.map(async (row) => {
         const link = row[0];
         return {
             link,
@@ -27,31 +27,24 @@ async function scrapelien() {
             summary: row[7],
             reported: row[8],
             posted: row[9],
-            image: row[10] === ("" || "N") ? [] : itsGivingImage(link),
+            image: row[10] === ("" || "N") ? [] : await itsGivingImage(link, browser),
         };
-    });
+    }));
     await browser.close();
-    console.log(records[0].link, 'link of first sighting');
     return records;
 }
 exports.scrapelien = scrapelien;
-async function itsGivingImage(url) {
-    const browser = await puppeteer_1.default.launch();
+async function itsGivingImage(url, browser) {
     const page = await browser.newPage();
     await page.goto(url);
-    console.log(url, 'URL');
     const givenImages = await page.evaluate(async () => {
         try {
-            const images = Array.from(document.querySelectorAll('img')).map((image) => image.getAttribute('src'));
+            const images = Array.from(document.querySelectorAll("img")).map((image) => image.getAttribute("src"));
             return images;
         }
         catch (error) {
             throw error;
         }
     });
-    await browser.close();
     return givenImages.slice(1);
 }
-itsGivingImage('https://nuforc.org/sighting/?id=180317').then((result) => {
-    console.log(result);
-});
